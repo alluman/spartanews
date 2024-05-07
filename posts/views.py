@@ -62,6 +62,27 @@ class CommentCreate(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+class CommentUpdate(APIView):
+    def get(self, request, post_id, comment_id):
+        comment = get_object_or_404(Comment, pk=comment_id, post__id=post_id)
+        serializer = CommentSerializer(comment)
+        return Response(serializer.data)
+
+    def patch(self, request, post_id, comment_id):
+        comment = get_object_or_404(Comment, pk=comment_id, post__id=post_id)
+        serializer = CommentSerializer(
+            comment, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, post_id, comment_id):
+        comment = get_object_or_404(Comment, pk=comment_id, post__id=post_id)
+        comment.delete()
+        return Response({"message": "삭제완료"}, status=status.HTTP_204_NO_CONTENT)
+
+
 class CommentDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
