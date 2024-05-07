@@ -56,8 +56,6 @@ class CommentCreate(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
-
 # 메뉴의 [쓰레드] 누르면 작성한 comments, reply 모두 최신순으로 나열
 class UserCommentsListView(APIView):
     def get(self, request, username):

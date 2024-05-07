@@ -15,14 +15,14 @@ class Comment(models.Model):
     post = models.ForeignKey(Post, related_name='comments', on_delete=models.CASCADE)
     content = models.TextField()
     author = models.ForeignKey(User, on_delete=models.CASCADE)
-    comments_like = models.ManyToManyField(User, related_name='liked_posts', blank=True)
-    comments_upvote = models.ManyToManyField(User, related_name='upvoted_posts', blank=True)
+    comments_like = models.ManyToManyField(User, related_name='liked_comments', blank=True)
+    comments_upvote = models.ManyToManyField(User, related_name='upvoted_comments', blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
 class Reply(models.Model):
     comment = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name='replies')
     content = models.TextField()
     author = models.ForeignKey(User, on_delete=models.CASCADE)
-    reply_like = models.ManyToManyField(User, related_name='liked_posts', blank=True)
-    reply_upvote = models.ManyToManyField(User, related_name='upvoted_posts', blank=True)
+    reply_like = models.ManyToManyField(User, related_name='liked_replies', blank=True)
+    reply_upvote = models.ManyToManyField(User, related_name='upvoted_replies', blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
