@@ -50,11 +50,21 @@ class UserProfileView(APIView):
         serializer = UserProfileSerializer(user)
         return Response(serializer.data)
 
-    def patch(self, request, username):
-        user = get_object_or_404(User, username=username)        
+    def patch(self, request):
+        user = request.user
         serializer = UserProfileSerializer(user, data=request.data, partial=True)
         if serializer.is_valid():
+            email = request.data.get('email')
+            if email and email != user.email and User.objects.filter(email=email).exists():
+                return Response({'message': '이미 사용중인 이메일입니다.'}, status=status.HTTP_400_BAD_REQUEST)
+            old_password = request.data('old_password')
+            new_password = request.data('new_password')
+            if not user.check_password(old_password):
+                return Response({'message': '예전 password와 일치하지 않습니다.'}, status=status.HTTP_400_BAD_REQUEST)
+            if new_password == old_password:
+                return Response({'message': '동일한 password입니다.'}, status=status.HTTP_400_BAD_REQUEST)
+            user.set_password(new_password)
+            user.save()
             serializer.save()
-            return Response({"message": "수정 완료되었습니다."})
+            return Response({'message': '프로필이 업데이트 되었습니다.'}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    #이거 user=request.user 말고 처리하는 방법? front에서 해결하나? 그냥 나누는건 쉬운데
