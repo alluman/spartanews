@@ -50,15 +50,15 @@ class UserProfileView(APIView):
         serializer = UserProfileSerializer(user)
         return Response(serializer.data)
 
-    def patch(self, request):
+    def patch(self, request, username):
         user = request.user
         serializer = UserProfileSerializer(user, data=request.data, partial=True)
         if serializer.is_valid():
             email = request.data.get('email')
             if email and email != user.email and User.objects.filter(email=email).exists():
                 return Response({'message': '이미 사용중인 이메일입니다.'}, status=status.HTTP_400_BAD_REQUEST)
-            old_password = request.data('old_password')
-            new_password = request.data('new_password')
+            old_password = request.data.get('old_password')
+            new_password = request.data.get('new_password')
             if not user.check_password(old_password):
                 return Response({'message': '예전 password와 일치하지 않습니다.'}, status=status.HTTP_400_BAD_REQUEST)
             if new_password == old_password:
