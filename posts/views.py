@@ -6,6 +6,8 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from accounts.models import User
+from rest_framework import generics
+from .serializers import CommentSerializer
 
 
 class PostList(APIView):
@@ -59,16 +61,22 @@ class CommentCreate(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+class CommentDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+
+
 # 메뉴의 [쓰레드] 누르면 작성한 comments, reply 모두 최신순으로 나열
 
 
 class UserCommentsListView(APIView):
     def get(self, request, pk):
-        user = get_object_or_404(User, pk=pk)
+        post = get_object_or_404(Post, pk=pk)
         comments = Comment.objects.filter(
-            author=user).order_by('created_at').values()
+            post=post).order_by('created_at').values()
         replies = Reply.objects.filter(
-            author=user).order_by('created_at').values()
+            comment__post=post).order_by('created_at').values()
         post_list = list(comments) + list(replies)
         post_list.sort(key=lambda x: x['created_at'], reverse=True)
         return Response(post_list)
