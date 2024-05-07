@@ -21,11 +21,17 @@ class CommentSerializer(serializers.ModelSerializer):
     comments_upvotes = serializers.PrimaryKeyRelatedField(
         many=True, read_only=True)
     author = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+    replies = serializers.SerializerMethodField()
 
     class Meta:
         model = Comment
-        fields = ['id', 'post', 'comments', 'author',
+        fields = ['id', 'post', 'comments', 'author', 'replies',
                   'comments_likes', 'comments_upvotes', 'created_at']
+
+    def get_replies(self, obj):
+        replies = Comment.objects.filter(Reply_comment=obj)
+        serializer = CommentSerializer(replies, many=True)
+        return serializer.data
 
 
 class ReplySerializer(serializers.ModelSerializer):

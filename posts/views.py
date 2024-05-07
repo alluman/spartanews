@@ -7,7 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from accounts.models import User
 from rest_framework import generics
-from .serializers import CommentSerializer
+from .serializers import CommentSerializer, ReplySerializer
 
 
 class PostList(APIView):
@@ -113,3 +113,21 @@ class UserCommentsListView(APIView):
         post_list = list(comments) + list(replies)
         post_list.sort(key=lambda x: x['created_at'], reverse=True)
         return Response(post_list)
+
+
+class ReplyCreateAPIView(APIView):
+    def post(self, request, comment_id):
+        comment = get_object_or_404(Comment, id=comment_id)
+        serializer = ReplySerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(comment=comment, author=request.user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ReplyListAPIView(APIView):
+    def get(self, request, comment_id):
+        comment = get_object_or_404(Comment, id=comment_id)
+        replies = comment.reply_comments.all()
+        serializer = ReplySerializer(replies, many=True)
+        return Response(serializer.data)

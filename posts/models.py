@@ -26,12 +26,14 @@ class Comment(models.Model):
         User, related_name='upvoted_comments', blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     unique_together = ['post', 'author']
+    parent_comment = models.ForeignKey(
+        'self', on_delete=models.CASCADE, null=True, blank=True, related_name='replies')
 
 
 class Reply(models.Model):
     comment = models.ForeignKey(
-        Comment, on_delete=models.CASCADE, related_name='replies')
-    content = models.TextField()
+        Comment, related_name='reply_comments', on_delete=models.CASCADE)
+    content = models.CharField(max_length=255)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     reply_likes = models.ManyToManyField(
         User, related_name='liked_replies', blank=True)

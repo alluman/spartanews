@@ -14,4 +14,8 @@ urlpatterns = [
          views.CommentsList.as_view(), name='comment_list'),
     path('comments/user/<int:pk>/',
          views.UserCommentsListView.as_view(), name='comment_user_list'),
+    path('comments/<int:comment_id>/replies/',
+         views.ReplyListAPIView.as_view(), name='reply-list'),
+    path('comments/<int:comment_id>/replies/create/',
+         views.ReplyCreateAPIView.as_view(), name='reply-create'),
 ]
