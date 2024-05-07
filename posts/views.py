@@ -67,16 +67,28 @@ class CommentDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = CommentSerializer
 
 
-# 메뉴의 [쓰레드] 누르면 작성한 comments, reply 모두 최신순으로 나열
-
-
-class UserCommentsListView(APIView):
+class CommentsList(APIView):
     def get(self, request, pk):
         post = get_object_or_404(Post, pk=pk)
         comments = Comment.objects.filter(
             post=post).order_by('created_at').values()
         replies = Reply.objects.filter(
             comment__post=post).order_by('created_at').values()
+        post_list = list(comments) + list(replies)
+        post_list.sort(key=lambda x: x['created_at'], reverse=True)
+        return Response(post_list)
+
+
+# 메뉴의 [쓰레드] 누르면 작성한 comments, reply 모두 최신순으로 나열
+
+
+class UserCommentsListView(APIView):
+    def get(self, request, pk):
+        user = get_object_or_404(User, pk=pk)
+        comments = Comment.objects.filter(
+            author=user).order_by('created_at').values()
+        replies = Reply.objects.filter(
+            author=user).order_by('created_at').values()
         post_list = list(comments) + list(replies)
         post_list.sort(key=lambda x: x['created_at'], reverse=True)
         return Response(post_list)
