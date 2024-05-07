@@ -12,4 +12,6 @@ urlpatterns = [
          views.CommentCreate.as_view(), name='comment_create'),
     path('<int:pk>/comments/detail',
          views.CommentDetail.as_view(), name='comment_detail'),
+    path('comments/<int:pk>/',
+         views.UserCommentsListView.as_view(), name='comment_user_list'),
 ]
