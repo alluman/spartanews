@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework_simplejwt.token_blacklist',
     'accounts',
     'posts',
 ]
@@ -79,10 +80,25 @@ WSGI_APPLICATION = 'spartanews.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',
+        'USER': 'tmoon',
+        'PASSWORD': 'jqjqjqjq',
+        'HOST': 'db',
+        'PORT': '5432',
     }
 }
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": "redis://redis:6379/1",
+    }
+}
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+SESSION_CACHE_ALIAS = "default"
+
+
 AUTH_USER_MODEL = 'accounts.User'
 
 # Password validation
@@ -133,7 +149,7 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5), 
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30), 
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),  
     'ROTATE_REFRESH_TOKENS': False, 
     'BLACKLIST_AFTER_ROTATION': False,  
