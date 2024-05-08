@@ -12,7 +12,7 @@ class PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = ['id', 'type', 'title', 'content',
-                  'link', 'post_likes', 'post_upvotes', 'author']
+                'link', 'post_likes', 'post_upvotes', 'author']
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -26,7 +26,7 @@ class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = ['id', 'post', 'comments', 'author', 'replies',
-                  'comments_likes', 'comments_upvotes', 'created_at']
+                'comments_likes', 'comments_upvotes', 'created_at']
 
     def get_replies(self, obj):
         replies = Comment.objects.filter(Reply_comment=obj)

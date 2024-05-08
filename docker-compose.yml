@@ -13,6 +13,8 @@ services:
       DATABASE_URL: postgres://tmoon:jqjqjqjq@db:5432/postgres
       REDIS_URL: redis://redis:6379/0
 
+  
+
   db:
     image: postgres:13
     volumes:
