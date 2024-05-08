@@ -30,7 +30,7 @@ class LogoutView(APIView):
         token = RefreshToken(request.data.get('refresh'))
         token.blacklist()
         return Response({'message': '성공적으로 로그아웃 되었습니다.'}, status.HTTP_200_OK)
-    
+
 class DeleteView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -42,7 +42,6 @@ class DeleteView(APIView):
         user.delete()
         return Response({"message": "삭제되었습니다."}, status=status.HTTP_204_NO_CONTENT)
     
-
 class UserProfileView(APIView):
     permission_classes = [IsAuthenticated]
     def get(self, request, username):
