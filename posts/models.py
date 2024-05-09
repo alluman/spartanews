@@ -1,5 +1,6 @@
 from django.db import models
 from accounts.models import User
+from django.utils import timezone
 
 
 class Post(models.Model):
@@ -13,6 +14,20 @@ class Post(models.Model):
     post_upvote = models.ManyToManyField(
         User, related_name='upvoted_posts', blank=True)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def postlist_points(self):
+        after_day = (timezone.now() - self.created_at).days
+        after_day_point = -5 * after_day
+
+        comments_count = self.comments.count()
+        comments_count_point = 3 * comments_count
+
+        likes_count = self.post_like.count()
+        likes_count_point = 1 * likes_count
+
+        return after_day_point + comments_count_point + likes_count_point
 
 
 class Comment(models.Model):
