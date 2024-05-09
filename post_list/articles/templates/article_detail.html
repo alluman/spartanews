@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>{{ article.title }}</h1>
+    <p>{{ article.content }}</p>
+    <p>작성 시간: {{ article.created_at }}</p>
+    <button id="like-btn" data-article-id="{{ article.id }}">좋아요</button>
+    <span id="like-count">{{ article.likes }}</span>
+    <a href="{% url 'index' %}">목록으로 돌아가기</a>
+
+<script>
+document.getElementById('like-btn').addEventListener('click', function() {
+    var articleId = this.getAttribute('data-article-id');
+    fetch(`/articles/${articleId}/like/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            'likes': true
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if(data.success) {
+            document.getElementById('like-count').innerText = data.likes;
+        } else {
+            alert('오류가 발생했습니다.');
+        }
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+    });
+});
+</script>
+{% endblock content %}
