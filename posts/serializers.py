@@ -29,7 +29,7 @@ class CommentSerializer(serializers.ModelSerializer):
                   'comments_likes', 'comments_upvotes', 'created_at']
 
     def get_replies(self, obj):
-        replies = Comment.objects.filter(Reply_comment=obj)
+        replies = Comment.objects.filter(parent_comment_id=obj.id)
         serializer = CommentSerializer(replies, many=True)
         return serializer.data
 

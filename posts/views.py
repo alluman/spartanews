@@ -13,7 +13,10 @@ from .serializers import CommentSerializer, ReplySerializer
 class PostList(APIView):
     def get(self, request):
         posts = Post.objects.all()
-        serializer = PostSerializer(posts, many=True)
+        for post in posts:
+            post.points = post.postlist_points()
+        sorted_posts = sorted(posts, key=lambda x: x.points, reverse=True)
+        serializer = PostSerializer(sorted_posts, many=True)
         return Response(serializer.data)
 
 
@@ -50,8 +53,8 @@ class PostDetail(APIView):
 
 
 class CommentCreate(APIView):
-    def post(self, request, pk):
-        post = get_object_or_404(Post, pk=pk)
+    def post(self, request, post_pk):
+        post = get_object_or_404(Post, pk=post_pk)
         data = request.data
         data['post'] = post.pk
         data['author'] = request.user.id
